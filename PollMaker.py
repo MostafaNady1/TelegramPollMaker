@@ -160,11 +160,17 @@ async def GenerateQuiz(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                         qChoices = qPieces[1:]
                         qAnswer = int(u['answers'][q])
 
-                        await update.effective_message.reply_poll(qText, 
-                            qChoices,
-                            type=Poll.QUIZ,
-                            is_anonymous=True,
-                            correct_option_id=qAnswer)
+                        try:
+                            await update.effective_message.reply_poll(qText, 
+                                qChoices,
+                                type=Poll.QUIZ,
+                                is_anonymous=True,
+                                correct_option_id=qAnswer)
+                        except:
+                            QuestionRegroup = "{}\n".format(qText)
+                            for c in qChoices:
+                                QuestionRegroup += "{}\n".format(c)
+                            await update.message.reply_text("ERROR: THIS QUESTION EXCEEEDED THE LIMIT\n"+QuestionRegroup)
                 else:
                     await update.message.reply_text("the number of answers isn't equal to that of questions")
             else:
