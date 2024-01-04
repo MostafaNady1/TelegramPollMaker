@@ -42,6 +42,7 @@ async def Start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Hello, {}\nPlease enter the questions and answers in separate messages like the follwing format".format(user.first_name))
     await update.message.reply_text("#QUESTIONS\nFirst question text here\nChoice 1\nChoice 2\nChoice 3\nChoice ...\n\nSecond question text here\nChoice 1\nChoice 2\nChoice 3")
     await update.message.reply_text("#ANSWERS\nFirst answer no/letter here\nSecond answer no/letter here")
+    await update.message.reply_text("Note: to add more questions or answers to the previously added ones\nreplace the hashtages with #ADD_QUESTIONS or #ADD_ANSWERS")
     
     return WRITTING
 
