@@ -6,6 +6,14 @@ botToken = "6441621381:AAHAcXtQqkhF4sCv9jBx3V9993Lp-zbS7oc"
 
 WRITTING = range(1)
 
+def ReCheckText(data):
+    newData = []
+    for x in data:
+        if x.isspace():
+            x = ""
+        newData.append(x)
+    return "\n".join(newData)
+
 def AddUser(user):
     found = False
     for u in Users:
@@ -49,9 +57,9 @@ async def Start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def ReceiveData(update, context):
     user = update.effective_user
     userinput = update.message.text
-    if userinput.split("\n")[0] == "#QUESTIONS":
+    if "#QUESTIONS" in userinput.split("\n")[0]:
         t = userinput.split("\n")[1:]
-        text = "\n".join(t)
+        text = ReCheckText(t)
         questions = text.split("\n\n")
         answers = []
         updateUserData(user, "A", answers)
@@ -64,10 +72,10 @@ async def ReceiveData(update, context):
                 break
         if len(questions) >= 1:
             updateUserData(user, "Q", questions)
-            await update.message.reply_text("Questions added successfully")
-    elif userinput.split("\n")[0] == "#ADD_QUESTIONS":
+            await update.message.reply_text("{} Questions added successfully".format(len(questions)))
+    elif "#ADD_QUESTIONS" in userinput.split("\n")[0]:
         t = userinput.split("\n")[1:]
-        text = "\n".join(t)
+        text = ReCheckText(t)
         questions = text.split("\n\n")
         for q in range(len(questions)):
             qPieces = questions[q].split("\n")
@@ -83,9 +91,9 @@ async def ReceiveData(update, context):
                     break
             TotalQuestions += questions
             updateUserData(user, "Q", TotalQuestions)
-            await update.message.reply_text("Questions added successfully")
-
-    elif userinput.split("\n")[0] == "#ANSWERS":
+            await update.message.reply_text("{} Questions added successfully".format(len(questions)))
+            await update.message.reply_text("Total questions = {}".format(len(TotalQuestions)))
+    elif "#ANSWERS" in userinput.split("\n")[0]:
         answers = userinput.split("\n")[1:]
         newAnswers = []
         for x in answers:
@@ -110,8 +118,8 @@ async def ReceiveData(update, context):
         answers = newAnswers
         updateUserData(user, "A", answers)
         if len(answers) >= 1:
-            await update.message.reply_text("Answers added successfully")
-    elif userinput.split("\n")[0] == "#ADD_ANSWERS":
+            await update.message.reply_text("{} Answers added successfully".format(len(answers)))
+    elif "#ADD_ANSWERS" in userinput.split("\n")[0]:
         answers = userinput.split("\n")[1:]
         newAnswers = []
         for x in answers:
@@ -142,14 +150,13 @@ async def ReceiveData(update, context):
                    break
             TotalAnswers += answers
             updateUserData(user, "A", TotalAnswers)
-            await update.message.reply_text("Answers added successfully")
-            
+            await update.message.reply_text("{} Answers added successfully".format(len(answers)))
+            await update.message.reply_text("Total answers = {}".format(len(TotalAnswers)))
     else:
         await update.message.reply_text("please identify if your message contains the questions or the answers by placing #QUESTIONS or #ANSWERS in the first line of your message")
 
 async def GenerateQuiz(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
-
     for u in Users:
         if u['id'] == user.id:
             if u['questions'] != [] and u['answers'] != []:
@@ -177,6 +184,14 @@ async def GenerateQuiz(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 await update.message.reply_text("Please enter both the questions and the answers")
             break
 
+async def GetTotalAddedNo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user = update.effective_user
+    for u in Users:
+        if u['id'] == user.id:
+            await update.message.reply_text("Total questions = {}".format(len(u['questions'])))
+            await update.message.reply_text("Total answers = {}".format(len(u['answers'])))
+            break
+
 async def Cancel(update: Update,  context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Conversation canceled\nsend /start to run it again")
     return WRITTING
@@ -187,8 +202,9 @@ conv_handler = ConversationHandler(
         entry_points=[CommandHandler(["start", "menu"], Start)],
         states={
             WRITTING: [
-                CommandHandler(["start", "menu"], Start),
+                CommandHandler(["start"], Start),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, ReceiveData),
+                CommandHandler(["getalladded"], GetTotalAddedNo),
                 CommandHandler(["generate"], GenerateQuiz)
                 ]
         },
