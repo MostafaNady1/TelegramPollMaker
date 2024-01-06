@@ -31,7 +31,7 @@ def CheckPresenceOFExplanation(choices):
 
     if noteCaptured:exp = "\n".join(expLines)
 
-    return NewChoices, exp
+    return newChoices, exp
 
 def AddUser(user):
     found = False
