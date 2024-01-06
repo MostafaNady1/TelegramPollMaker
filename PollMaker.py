@@ -14,6 +14,16 @@ def ReCheckText(data):
         newData.append(x)
     return "\n".join(newData)
 
+def CheckPresenceOFExplanation(choices):
+    if "#NOTE:" in choices[len(choices)-1]:
+        ExpLine = choices[-1:]
+        exp = EXpLine.replace("#NOTE:", "")
+        NewChoices = choices[:-1]
+
+        return NewChoices, exp
+    else:
+        return choices, None
+
 def AddUser(user):
     found = False
     for u in Users:
@@ -48,10 +58,10 @@ async def Start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     AddUser(user)
     await update.message.reply_text("Hello, {}\nPlease enter the questions and answers in separate messages like the follwing format".format(user.first_name))
-    await update.message.reply_text("#QUESTIONS\nFirst question text here\nChoice 1\nChoice 2\nChoice 3\nChoice ...\n\nSecond question text here\nChoice 1\nChoice 2\nChoice 3")
+    await update.message.reply_text("#QUESTIONS\nFirst question text here\nChoice 1\nChoice 2\nChoice 3\nChoice...\n#NOTE:Enter your note here\n\nSecond question text here\nChoice 1\nChoice 2\nChoice 3\n#NOTE:Enter your note here")
     await update.message.reply_text("#ANSWERS\nFirst answer no/letter here\nSecond answer no/letter here")
     await update.message.reply_text("Note: to add more questions or answers to the previously added ones\nreplace the hashtages with #ADD_QUESTIONS or #ADD_ANSWERS")
-        
+    
     return WRITTING
 
 async def ReceiveData(update, context):
@@ -165,12 +175,14 @@ async def GenerateQuiz(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                         qPieces = u['questions'][q].split("\n")
                         qText = qPieces[0]
                         qChoices = qPieces[1:]
+                        qChoices, qExpl = CheckPresenceOFExplanation(qChoices)
                         qAnswer = int(u['answers'][q])
 
                         try:
                             await update.effective_message.reply_poll(qText, 
                                 qChoices,
                                 type=Poll.QUIZ,
+                                explanation=qExpl,
                                 is_anonymous=True,
                                 correct_option_id=qAnswer)
                         except:
