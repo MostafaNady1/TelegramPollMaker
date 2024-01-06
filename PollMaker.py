@@ -15,14 +15,23 @@ def ReCheckText(data):
     return "\n".join(newData)
 
 def CheckPresenceOFExplanation(choices):
-    if "#NOTE:" in choices[len(choices)-1]:
-        ExpLine = choices[-1:]
-        exp = ExpLine[0].replace("#NOTE:", "")
-        NewChoices = choices[:-1]
+    newChoices = []
+    expLines = []
+    exp = None
+    noteCaptured = False
+    for line in choices:
+        if "#NOTE" in line:
+            noteCaptured = True
+            continue
+        if not noteCaptured:
+            newChoices.append(line)
+        else:
+            if not line.isspace():
+                expLines.append(line)
 
-        return NewChoices, exp
-    else:
-        return choices, None
+    if noteCaptured:exp = "\n".join(expLines)
+
+    return NewChoices, exp
 
 def AddUser(user):
     found = False
