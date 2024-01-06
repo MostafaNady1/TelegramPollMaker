@@ -17,7 +17,7 @@ def ReCheckText(data):
 def CheckPresenceOFExplanation(choices):
     if "#NOTE:" in choices[len(choices)-1]:
         ExpLine = choices[-1:]
-        exp = EXpLine.replace("#NOTE:", "")
+        exp = ExpLine[0].replace("#NOTE:", "")
         NewChoices = choices[:-1]
 
         return NewChoices, exp
@@ -61,7 +61,7 @@ async def Start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("#QUESTIONS\nFirst question text here\nChoice 1\nChoice 2\nChoice 3\nChoice...\n#NOTE:Enter your note here\n\nSecond question text here\nChoice 1\nChoice 2\nChoice 3\n#NOTE:Enter your note here")
     await update.message.reply_text("#ANSWERS\nFirst answer no/letter here\nSecond answer no/letter here")
     await update.message.reply_text("Note: to add more questions or answers to the previously added ones\nreplace the hashtages with #ADD_QUESTIONS or #ADD_ANSWERS")
-    
+
     return WRITTING
 
 async def ReceiveData(update, context):
