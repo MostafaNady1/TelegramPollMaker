@@ -1,7 +1,6 @@
 from telegram import Update, ReplyKeyboardMarkup, Poll
 from telegram.ext import filters, Updater, ContextTypes, CommandHandler, ApplicationBuilder, MessageHandler, ConversationHandler
 
-AuthorizedUsers = [1138175793]
 Users = []
 botToken = "6441621381:AAHAcXtQqkhF4sCv9jBx3V9993Lp-zbS7oc"
 
@@ -45,27 +44,15 @@ def updateUserData(user, key, value):
         AddUser(user)
         updateUserData(user, data)
 
-async def GetId(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.effective_user
-    await update.message.reply_text("Your id: {}".format(user.id))
-
-async def GetUsers(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Total users: {}".format(len(AuthorizedUsers)))
-
 async def Start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
-    if int(user.id) in AuthorizedUsers:
-        AddUser(user)
-        await update.message.reply_text("Hello, {}\nPlease enter the questions and answers in separate messages like the follwing format".format(user.first_name))
-        await update.message.reply_text("#QUESTIONS\nFirst question text here\nChoice 1\nChoice 2\nChoice 3\nChoice ...\n\nSecond question text here\nChoice 1\nChoice 2\nChoice 3")
-        await update.message.reply_text("#ANSWERS\nFirst answer no/letter here\nSecond answer no/letter here")
-        await update.message.reply_text("Note: to add more questions or answers to the previously added ones\nreplace the hashtages with #ADD_QUESTIONS or #ADD_ANSWERS")
+    AddUser(user)
+    await update.message.reply_text("Hello, {}\nPlease enter the questions and answers in separate messages like the follwing format".format(user.first_name))
+    await update.message.reply_text("#QUESTIONS\nFirst question text here\nChoice 1\nChoice 2\nChoice 3\nChoice ...\n\nSecond question text here\nChoice 1\nChoice 2\nChoice 3")
+    await update.message.reply_text("#ANSWERS\nFirst answer no/letter here\nSecond answer no/letter here")
+    await update.message.reply_text("Note: to add more questions or answers to the previously added ones\nreplace the hashtages with #ADD_QUESTIONS or #ADD_ANSWERS")
         
-        return WRITTING
-    else:
-        await update.message.reply_text("Hello, {}\nSorry, You're not authorized to use this bot".format(user.first_name))
-        await update.message.reply_text("you can pay for your access by contacting the admin @memom57")
-        await update.message.reply_text("Developed by: @MostafaNady1")
+    return WRITTING
 
 async def ReceiveData(update, context):
     user = update.effective_user
@@ -212,10 +199,7 @@ async def Cancel(update: Update,  context: ContextTypes.DEFAULT_TYPE) -> None:
 bot = ApplicationBuilder().token(botToken).build()
 
 conv_handler = ConversationHandler(
-        entry_points=[CommandHandler(["start", "menu"], Start),
-                    CommandHandler(["getid"], GetId),
-                    CommandHandler(["getusers"], GetUsers)
-                    ],
+        entry_points=[CommandHandler(["start", "menu"], Start)],
         states={
             WRITTING: [
                 CommandHandler(["start"], Start),
