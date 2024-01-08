@@ -232,4 +232,4 @@ conv_handler = ConversationHandler(
 
 bot.add_handler(conv_handler)
 
-bot.run_polling()
+bot.run_polling(drop_pending_updates=True)
